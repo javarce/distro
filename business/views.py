@@ -1,7 +1,12 @@
 
 from django.shortcuts import render, redirect
 from business.models import BaseUser
-from business.constants import BUSINESS_OWNER
+from business.constants import BUSINESS_OWNER, business_roles
+
+
+context= {
+    'business_roles': business_roles
+}
 
 
 def index(request):
@@ -30,7 +35,7 @@ def login(request):
 
 
 def dashboard(request):
-    return render(request, 'business/catalog/dashboard.html')
+    return render(request, 'business/layouts/base.html', context)
 
 
 def register(request):

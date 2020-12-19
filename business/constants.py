@@ -13,3 +13,15 @@ ROLES = (
     (STORE_MANAGER, 'Store Manager'),
     (DISPATCH_MANAGER, 'Dispatch Manager'),
 )
+
+
+business_roles = [
+    {
+        'id': STORE_MANAGER,
+        'title': 'Store Manager'
+    },
+    {
+        'id': DISPATCH_MANAGER,
+        'title': 'Dispatch Manager'
+    },
+]
