@@ -1,0 +1,42 @@
+{% extends "business/layouts/base.html" %}
+
+{% block head %}
+    <title>DistroIQ | My businesses</title>
+{% endblock head %}
+
+{% block content %}
+    <div class="pd-30">
+        <h4 class="tx-gray-800 mg-b-5">Dashboard</h4>
+    </div>
+
+    <div class="br-pagebody mg-t-5 pd-x-30">
+
+        <div class="row row-sm mg-t-20">
+            <div class="col-12">
+                <div class="card pd-0 bd-0 shadow-base">
+                    <div class="pd-x-30 pd-t-30 pd-b-15">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">Network
+                                    Performance</h6>
+                                <p class="mg-b-0">Duis autem vel eum iriure dolor in hendrerit in vulputate...</p>
+                            </div>
+                            <div class="tx-13">
+                                <p class="mg-b-0"><span class="square-8 rounded-circle bg-purple mg-r-10"></span>
+                                    TCP Reset Packets
+                                </p>
+                                <p class="mg-b-0"><span class="square-8 rounded-circle bg-pink mg-r-10"></span> TCP
+                                    FIN Packets</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pd-x-15 pd-b-15">
+                        <div id="ch1" class="br-chartist br-chartist-2 ht-200 ht-sm-300"></div>
+                    </div>
+                </div><!-- card -->
+
+            </div><!-- col-9 -->
+        </div>
+
+    </div>
+{% endblock content %}

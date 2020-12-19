@@ -61,6 +61,27 @@ class BaseUser(models.Model):
         return bool(users)
 
 
+
+
 class Business(models.Model):
-    name = models.CharField(max_length=100)
-    location = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=False, null=False)
+    location = models.CharField(max_length=100, blank=False, null=False)
+    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE, related_name='user_businesses', null=False, blank=False, default=0)
+
+
+    def validate(self):
+        errors = {}
+
+        if len(self.name) > 100:
+            errors['error_name'] = 'Name cannot be more than 100 characters'
+
+        if not self.name:
+            errors['error_name'] = 'Name cannot be blank'
+
+        if len(self.location) > 100:
+            errors['error_location'] = 'Location cannot be more than 100 characters'
+
+        if not self.location:
+            errors['error_location'] = 'Location cannot be blank'
+
+        return errors

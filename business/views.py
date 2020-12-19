@@ -9,6 +9,12 @@ context= {
 }
 
 
+# Local function
+def get_authenticated_context(request):
+    context['user'] = BaseUser.objects.get(username=request.session['business_username'])
+    return context
+
+
 def index(request):
     if request.session.has_key('business_username'):
         return redirect('business:dashboard')
@@ -35,7 +41,7 @@ def login(request):
 
 
 def dashboard(request):
-    return render(request, 'business/layouts/base.html', context)
+    return render(request, 'business/layouts/base.html', get_authenticated_context(request))
 
 
 def register(request):
@@ -80,3 +86,12 @@ def register(request):
     else:
         # Return registration page
         return render(request, 'business/account/register.html')
+
+
+def my_businesses(request):
+    if request.session.has_key('business_username'):
+        # Business owner session still authenticated
+        return render(request, 'business/account/businesses.html', get_authenticated_context(request))
+
+    else:
+        return redirect('business:login')
