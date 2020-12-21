@@ -30,10 +30,21 @@
                             <table class="table table-striped">
                                 <thead style="background-color:#CCC;">
                                     <th>No</th>
+                                    <th>Photo</th>
                                     <th>Name</th>
+                                    <th>Role</th>
                                     <th>Status</th>
                                 </thead>
                                 <tbody>
+                                    {% for item in businesses %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ item.photo }}</td>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.role }}</td>
+                                            <td></td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         {% else %}

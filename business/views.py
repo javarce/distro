@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, redirect
-from business.models import BaseUser
+from business.models import BaseUser, Business
 from business.constants import BUSINESS_OWNER, business_roles
 
 
@@ -96,6 +96,41 @@ def my_businesses(request):
         context = get_authenticated_context(request)
         context['businesses'] = user.get_businesses()
         return render(request, 'business/account/businesses.html', context)
+
+    else:
+        return redirect('business:login')
+
+
+def add_businesses(request):
+    if request.session.has_key('business_username'):
+        # admin session still authenticated
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            category = request.POST.get('category')
+            location = request.POST.get('location')
+            photo = request.FILES.get('photo')
+
+            user = BaseUser.get_user_by_username(username=request.session['business_username'])
+
+            business = Business(name=name, category=category, location=location, photo=photo)
+
+            errors = business.validate()
+
+            if(len(errors.keys())):
+                business.save()
+                business.users.add(user)
+                business.save()
+
+                business.add_role(user, BUSINESS_OWNER)
+                return redirect('business:my_businesses')
+
+            else:
+                context['errors'] = errors
+                return render(request, 'business/business/add.html', context)
+
+        else:
+            context = get_authenticated_context(request)
+            return render(request, 'business/business/add.html', context)
 
     else:
         return redirect('business:login')

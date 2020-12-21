@@ -17,6 +17,10 @@ ROLES = (
 
 business_roles = [
     {
+        'id': BUSINESS_OWNER,
+        'title': 'Business Owner'
+    },
+    {
         'id': STORE_MANAGER,
         'title': 'Store Manager'
     },

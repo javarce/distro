@@ -1,0 +1,61 @@
+{% extends "business/layouts/base.html" %}
+
+
+{% block head %}
+    <title>Distro | Add business</title>
+{% endblock %}
+
+
+{% block content %}
+    <div class="pd-30">
+        <h4 class="tx-gray-800 mg-b-5">My Businesses</h4>
+    </div>
+
+    <div class="br-pagebody mg-t-5 pd-x-30">
+        <div class="row row-sm mg-t-20">
+            <div class="col-12">
+                <div class="card pd-0 bd-0 shadow-base">
+                    <div class="pd-x-30 pd-t-30 pd-b-15">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">Add Businesses</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pd-x-15 pd-b-15">
+                        
+                        <form action="/business/add" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="name">Business name (<span class="text-danger">*</span>)</label>
+                                <input id="name" name="name" type="text" class="form-control" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="category">Category (<span class="text-danger">*</span>)</label>
+                                <input id="category" name="category" type="text" class="form-control" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Photo (<span class="text-danger">*</span>)</label><br/>
+                                <label class="custom-file" for="file">
+                                <input type="file" id="file" class="custom-file-input" accept="image/x-png,image/jpg,image/jpeg" required/>
+                                <span class="custom-file-control"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="location">Location (<span class="text-danger">*</span>)</label>
+                                <input id="location" name="location" type="text" class="form-control" required/>
+                            </div>
+
+                            <button type="submit" class="btn btn-teal">Submit</button>
+                        </form>
+                           
+                    </div>
+                </div><!-- card -->
+
+            </div><!-- col-9 -->
+        </div>
+    </div>
+{% endblock %}

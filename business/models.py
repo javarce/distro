@@ -73,8 +73,11 @@ class BaseUser(models.Model):
             'phone': self.phone
         }
 
+
     def get_businesses(self):
-        return self.business_set.all()
+        businesses = self.business_set.all()
+        return [b.details(self) for b in businesses]
+
 
     @staticmethod
     def get_user_by_username(username: str) -> 'BaseUser':
@@ -86,12 +89,13 @@ class BaseUser(models.Model):
 
 class Business(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
+    category = models.CharField(max_length=100, blank=False, null=False, default='None')
     location = models.CharField(max_length=100, blank=False, null=False)
+    photo = models.ImageField(upload_to='uploads', blank=False, null=False, default='avatar.png')
     users = models.ManyToManyField(BaseUser)
-    # user = models.ForeignKey(BaseUser, on_delete=models.CASCADE, related_name='user_businesses', null=False, blank=False, default=0)
 
 
-    def validate(self):
+    def validate(self) -> dict:
         errors = {}
 
         if len(self.name) > 100:
@@ -100,10 +104,53 @@ class Business(models.Model):
         if not self.name:
             errors['error_name'] = 'Name cannot be blank'
 
+        if len(self.category) > 100:
+            errors['error_category'] = 'Category cannot be more than 100 characters'
+
+        if not self.category:
+            errors['error_category'] = 'Category cannot be blank'
+
         if len(self.location) > 100:
             errors['error_location'] = 'Location cannot be more than 100 characters'
 
         if not self.location:
             errors['error_location'] = 'Location cannot be blank'
 
+        if not self.photo:
+            errors['error_photo'] = 'Photo cannot be blank'
+
         return errors
+
+
+    def details(self, user):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'location': self.location,
+            'photo': self.photo,
+            'role': self.business_role(user)
+        }
+
+
+    def business_role(self, user) -> str:
+        ''' Get role of the user on this business. '''
+        b_role = BusinessRole.objects.get(user=user, business=self)
+        return b_role.get_role_display()
+
+
+    def add_role(self, user: 'BaseUser', role: int) -> None:
+        '''
+            Add user to this business, and their respective role.
+            This method must be called when both the user and business have been saved
+        '''
+        business_role = BusinessRole(role=role, user=user, business=self)
+        business_role.save()
+
+
+
+
+class BusinessRole(models.Model):
+    ''' Table to hold roles of accounts on businesses. '''
+    role = models.PositiveSmallIntegerField(choices=ROLES, blank=False, null=False)
+    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
+    business = models.OneToOneField(Business, on_delete=models.CASCADE)
