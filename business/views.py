@@ -11,7 +11,8 @@ context= {
 
 # Local function
 def get_authenticated_context(request):
-    context['user'] = BaseUser.objects.get(username=request.session['business_username'])
+    user = BaseUser.objects.get(username=request.session['business_username'])
+    context['user'] = user.details()
     return context
 
 
@@ -91,7 +92,10 @@ def register(request):
 def my_businesses(request):
     if request.session.has_key('business_username'):
         # Business owner session still authenticated
-        return render(request, 'business/account/businesses.html', get_authenticated_context(request))
+        user = BaseUser.get_user_by_username(request.session['business_username'])
+        context = get_authenticated_context(request)
+        context['businesses'] = user.get_businesses()
+        return render(request, 'business/account/businesses.html', context)
 
     else:
         return redirect('business:login')

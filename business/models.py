@@ -12,6 +12,9 @@ class BaseUser(models.Model):
     phone = models.CharField(max_length=15, blank=False, null=False, unique=True)
     password = models.CharField(max_length=225, blank=False, null=False)
 
+    def __str__(self):
+        return self.username
+
 
     def validate(self):
         errors = {}
@@ -60,13 +63,32 @@ class BaseUser(models.Model):
         users = BaseUser.objects.filter(username=username)
         return bool(users)
 
+    def details(self):
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'username': self.username,
+            'email': self.email,
+            'phone': self.phone
+        }
+
+    def get_businesses(self):
+        return self.business_set.all()
+
+    @staticmethod
+    def get_user_by_username(username: str) -> 'BaseUser':
+        return BaseUser.objects.get(username=username)
+
+
 
 
 
 class Business(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     location = models.CharField(max_length=100, blank=False, null=False)
-    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE, related_name='user_businesses', null=False, blank=False, default=0)
+    users = models.ManyToManyField(BaseUser)
+    # user = models.ForeignKey(BaseUser, on_delete=models.CASCADE, related_name='user_businesses', null=False, blank=False, default=0)
 
 
     def validate(self):

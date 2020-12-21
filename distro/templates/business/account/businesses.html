@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="pd-30">
-        <h4 class="tx-gray-800 mg-b-5">Dashboard</h4>
+        <h4 class="tx-gray-800 mg-b-5">My Businesses</h4>
     </div>
 
     <div class="br-pagebody mg-t-5 pd-x-30">
@@ -17,21 +17,29 @@
                     <div class="pd-x-30 pd-t-30 pd-b-15">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">Network
-                                    Performance</h6>
-                                <p class="mg-b-0">Duis autem vel eum iriure dolor in hendrerit in vulputate...</p>
+                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">My Businesses</h6>
                             </div>
                             <div class="tx-13">
-                                <p class="mg-b-0"><span class="square-8 rounded-circle bg-purple mg-r-10"></span>
-                                    TCP Reset Packets
-                                </p>
-                                <p class="mg-b-0"><span class="square-8 rounded-circle bg-pink mg-r-10"></span> TCP
-                                    FIN Packets</p>
+                                <a class="btn btn-primary text-white" href="/business/add">Add New Business</a>
                             </div>
                         </div>
                     </div>
                     <div class="pd-x-15 pd-b-15">
-                        <div id="ch1" class="br-chartist br-chartist-2 ht-200 ht-sm-300"></div>
+                        
+                        {% if businesses %}
+                            <table class="table table-striped">
+                                <thead style="background-color:#CCC;">
+                                    <th>No</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <tr><p class="text-center">No businesses for this user.</p></tr>
+                        {% endif %}
+                           
                     </div>
                 </div><!-- card -->
 
