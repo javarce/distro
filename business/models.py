@@ -138,6 +138,10 @@ class Business(models.Model):
         if b_role:
             return b_role.get_role_display()
 
+    
+    def get_users(self, role):
+        return [u for u in self.users.all() if BusinessRole.objects.filter(user=u, business=self, role=role).first()]
+
 
     def add_role(self, user: 'BaseUser', role: int) -> None:
         '''

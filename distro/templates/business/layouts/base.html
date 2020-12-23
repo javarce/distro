@@ -97,30 +97,33 @@
 				</a>
 				<ul class="br-menu-sub nav flex-column">
 					<li class="nav-item">
-						<a href="/business/orders/pending" class="nav-link">Pending</a>
-						<a href="/business/orders/confirmed" class="nav-link">Confirmed</a>
-						<a href="/business/orders/returned" class="nav-link">Returned</a>
-						<a href="/business/orders/delivered" class="nav-link">Delivered</a>
+						<a href="#" class="nav-link">Pending</a>
+						<a href="#" class="nav-link">Confirmed</a>
+						<a href="#" class="nav-link">Returned</a>
+						<a href="#" class="nav-link">Delivered</a>
 					</li>
 				</ul>
 			{% endif %}
 
-			<a href="#" class="br-menu-link">
-				<div class="br-menu-item">
-					<i class="menu-item-icon icon ion-ios-filing-outline tx-24"></i>
-					<span class="menu-item-label">Users</span>
-					<i class="menu-item-arrow fa fa-angle-down"></i>
-				</div>
-			</a>
-			<ul class="br-menu-sub nav flex-column">
-				{% for item in business_roles %}
-				<li class="nav-item">
-					<a href="/business/users?group_id={{item.id}}" class="nav-link">
-						{{ item.title }}
-					</a>
-				</li>
-				{% endfor %}
-			</ul>
+			{% if curr_business_id %}
+				<a href="#" class="br-menu-link">
+					<div class="br-menu-item">
+						<i class="menu-item-icon icon ion-ios-filing-outline tx-24"></i>
+						<span class="menu-item-label">Users</span>
+						<i class="menu-item-arrow fa fa-angle-down"></i>
+					</div>
+				</a>
+				<ul class="br-menu-sub nav flex-column">
+					{% for item in business_roles %}
+					<li class="nav-item">
+						<a href="/business/users?group_id={{item.id}}" class="nav-link">
+							{{ item.title }}
+						</a>
+					</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+
 
 		</div>
 

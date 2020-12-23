@@ -1,0 +1,56 @@
+
+{% extends 'business/layouts/base.html' %}
+
+{% block content %}
+    <div class="pd-30">
+        <h4 class="tx-gray-800 mg-b-5">{{ business.name }}</h4>
+    </div>
+
+    <div class="br-pagebody mg-t-5 pd-x-30">
+
+        <div class="row row-sm mg-t-20">
+            <div class="col-12">
+                <div class="card pd-0 bd-0 shadow-base">
+                    <div class="pd-x-30 pd-t-30 pd-b-15">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">{{ role_title }}</h6>
+                            </div>
+                            <div class="tx-13">
+                                <a class="btn btn-primary text-white" href="/business/catalog/category/add">Add User</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pd-x-15 pd-b-15">
+                        
+                        {% if users %}
+                            <table class="table table-striped">
+                                <thead style="background-color:#CCC;">
+                                    <th>No</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                </thead>
+                                <tbody>
+                                    {% for item in users %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ item.first_name }} {{ item.last_name }}</td>
+                                            <td>{{ item.email }}</td>
+                                            <td>{{ item.phone }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <tr><p class="text-center">No {{ role_title }} for this business.</p></tr>
+                        {% endif %}
+                        
+                    </div>
+                </div><!-- card -->
+
+            </div><!-- col-9 -->
+        </div>
+
+    </div>
+{% endblock %}

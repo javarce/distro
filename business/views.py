@@ -244,3 +244,26 @@ def add_product(request):
 
     else:
         return redirect('business:login')
+
+
+
+def users(request):
+    if request.session.has_key('business_username'):
+        role = request.GET.get('group_id')
+        context = get_business_context(request)
+        business = context.get('business')
+        users = business.get_users(role)
+        context['users'] = users
+
+        # Current role
+        role_title = None
+        for r in business_roles:
+            if r['id'] == int(role):
+                role_title = r['title']
+                break
+        context['role_title'] = role_title
+        return render(request, 'business/user/list.html', context)
+
+
+    else:
+        return redirect('business:login')

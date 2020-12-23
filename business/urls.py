@@ -18,4 +18,5 @@ urlpatterns = [
     path('/catalog/category/add', views.add_category, name='add_category'),
     path('/catalog/products', views.products, name='products'),
     path('/catalog/product/add', views.add_product, name='add_product'),
+    path('/users', views.users, name='users'),
 ]
