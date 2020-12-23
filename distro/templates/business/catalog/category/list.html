@@ -1,12 +1,13 @@
-{% extends "business/layouts/base.html" %}
+{% extends 'business/layouts/base.html' %}
 
 {% block head %}
-    <title>DistroIQ | My businesses</title>
-{% endblock head %}
+    <title>{{ business.name }} | Categories</title>
+{% endblock %}
+
 
 {% block content %}
     <div class="pd-30">
-        <h4 class="tx-gray-800 mg-b-5">My Businesses</h4>
+        <h4 class="tx-gray-800 mg-b-5">{{ business.name }}</h4>
     </div>
 
     <div class="br-pagebody mg-t-5 pd-x-30">
@@ -17,46 +18,46 @@
                     <div class="pd-x-30 pd-t-30 pd-b-15">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">My Businesses</h6>
+                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">Categories</h6>
                             </div>
                             <div class="tx-13">
-                                <a class="btn btn-primary text-white" href="/business/add">Add New Business</a>
+                                <a class="btn btn-primary text-white" href="/business/catalog/category/add">Add New Category</a>
                             </div>
                         </div>
                     </div>
                     <div class="pd-x-15 pd-b-15">
                         
-                        {% if businesses %}
+                        {% if categories %}
                             <table class="table table-striped">
                                 <thead style="background-color:#CCC;">
                                     <th>No</th>
                                     <th>Photo</th>
                                     <th>Name</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
+                                    <th>#</th>
+                                    <th>#</th>
+                                    <th>#</th>
                                 </thead>
                                 <tbody>
-                                    {% for item in businesses %}
+                                    {% for item in categories %}
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
-                                            <td>{{ item.photo }}</td>
+                                            <td><img src="/media/{{ item.photo }}" style="height:40px; width:40px;"/></td>
                                             <td>{{ item.name }}</td>
-                                            <td>{{ item.role }}</td>
+                                            <td><a href="/business/catalog/category/{{item.id}}/products">Products</a></td>
                                             <td>
-                                                {% if item.id == curr_business_id %}
-                                                    <div class="text-success">Current</div>
-                                                {% else %}
-                                                    <a href="/business/current/{{item.id}}/activate" class="btn btn-sm btn-outline-primary">Switch</a>
-                                                {% endif %}
+                                                <a href="/business/catalog/category/{{item.id}}/edit" class="btn btn-sm btn-outline-success">Edit</a>
+                                            </td>
+                                            <td>
+                                                <a href="/business/catalog/category/{{item.id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         {% else %}
-                            <tr><p class="text-center">No businesses for this user.</p></tr>
+                            <tr><p class="text-center">No categories for this business.</p></tr>
                         {% endif %}
-                           
+                        
                     </div>
                 </div><!-- card -->
 
@@ -64,4 +65,4 @@
         </div>
 
     </div>
-{% endblock content %}
+{% endblock %}

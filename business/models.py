@@ -134,8 +134,9 @@ class Business(models.Model):
 
     def business_role(self, user) -> str:
         ''' Get role of the user on this business. '''
-        b_role = BusinessRole.objects.get(user=user, business=self)
-        return b_role.get_role_display()
+        b_role = BusinessRole.objects.filter(user=user, business=self).first()
+        if b_role:
+            return b_role.get_role_display()
 
 
     def add_role(self, user: 'BaseUser', role: int) -> None:
@@ -152,5 +153,77 @@ class Business(models.Model):
 class BusinessRole(models.Model):
     ''' Table to hold roles of accounts on businesses. '''
     role = models.PositiveSmallIntegerField(choices=ROLES, blank=False, null=False)
-    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
-    business = models.OneToOneField(Business, on_delete=models.CASCADE)
+    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+    business = models.ForeignKey(Business, on_delete=models.CASCADE)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=225)
+    photo = models.ImageField(upload_to='uploads', blank=False, null=False, default='avatar.png')
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='business_categories')
+
+
+    def validate(self) -> dict:
+        errors = {}
+
+        if len(self.name) > 225:
+            errors['error_name'] = 'Name cannot be more than 100 characters'
+
+        if not self.name:
+            errors['error_name'] = 'Name cannot be blank'
+
+        if not self.photo:
+            errors['error_photo'] = 'Photo cannot be blank'
+
+        return errors
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=225)
+    price = models.BigIntegerField(null=False, blank=False)
+    stock = models.BigIntegerField(null=False, blank=False)
+    photo = models.ImageField(upload_to='uploads', blank=False, null=False, default='avatar.png')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='product_categories')
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='business_products')
+
+    def validate(self, category_id) -> dict:
+        errors = {}
+        # Validate category
+        if not category_id:
+            errors['error_category'] = 'Category cannot be blank'
+
+        if not Category.objects.filter(id=category_id).first():
+            errors['error_category'] = 'Category no longer exists, please choose another'
+
+        if len(self.name) > 225:
+            errors['error_name'] = 'Name cannot be more than 225 characters'
+
+        if not self.name:
+            errors['error_name'] = 'Name cannot be blank'
+
+        if not self.price:
+            errors['error_price'] = 'Price must be greater than 0'
+
+        if not self.stock:
+            errors['error_stock'] = 'Stock must be greater than 0'
+
+        if not self.photo:
+            errors['error_photo'] = 'Photo cannot be blank'
+
+        return errors
+
+    
+    def details(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': self.price,
+            'text_price': f"UGX {self.price}/=",
+            'stock': self.stock,
+            'photo': self.photo,
+            'is_stock_available': self.stock > 0,
+            'stock_status': 'In-Stock' if self.stock > 0 else 'Not-In-Stock'
+        }
+
+
+

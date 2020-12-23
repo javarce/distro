@@ -1,19 +1,30 @@
 
 from django.shortcuts import render, redirect
-from business.models import BaseUser, Business
+from business.models import BaseUser, Business, Category, Product
 from business.constants import BUSINESS_OWNER, business_roles
 
 
-context= {
-    'business_roles': business_roles
-}
+'''
+    @key => curr_business_id => session key to key current active business
+'''
 
 
 # Local function
 def get_authenticated_context(request):
+    context= {
+        'business_roles': business_roles
+    }
     user = BaseUser.objects.get(username=request.session['business_username'])
     context['user'] = user.details()
+    context['curr_business_id'] = request.session.get('curr_business_id')
     return context
+
+# Business Context
+def get_business_context(request):
+    context = get_authenticated_context(request)
+    context['business'] = Business.objects.get(id=context['curr_business_id'])
+    return context
+
 
 
 def index(request):
@@ -95,6 +106,9 @@ def my_businesses(request):
         user = BaseUser.get_user_by_username(request.session['business_username'])
         context = get_authenticated_context(request)
         context['businesses'] = user.get_businesses()
+
+        # Get current viewed business_id from session
+        context['curr_business_id'] = request.session.get('curr_business_id')
         return render(request, 'business/account/businesses.html', context)
 
     else:
@@ -131,6 +145,102 @@ def add_businesses(request):
         else:
             context = get_authenticated_context(request)
             return render(request, 'business/business/add.html', context)
+
+    else:
+        return redirect('business:login')
+
+
+def activate_business_session(request, id):
+    if request.session.has_key('business_username'):
+        request.session['curr_business_id'] = id
+        return redirect('business:my_businesses')
+
+    else:
+        return redirect('business:login')
+
+
+
+def categories(request):
+    if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        business = context.get('business')
+        context['categories'] = business.business_categories.all()
+        return render(request, 'business/catalog/category/list.html', context)
+    
+    else:
+        return redirect('business:login')
+
+
+def add_category(request):
+    if request.session.has_key('business_username'):
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            photo = request.FILES.get('photo')
+
+            cont = get_business_context(request)
+            category = Category(name=name, photo=photo, business=cont.get('business'))
+            
+            errors = category.validate()
+            if len(errors.keys()):
+                cont['errors'] = errors
+                return render(request, 'business/catalog/category/add.html', cont)
+
+            else:
+                # Everything is okay, persist category to db
+                category.save()
+                return redirect('business:categories')
+
+        else:
+            return render(request, 'business/catalog/category/add.html', {'business_roles': business_roles})
+
+    else:
+        return redirect('business:login')
+
+
+def products(request):
+    if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        business = context.get('business')
+        context['products'] = business.business_products.all()
+        return render(request, 'business/catalog/product/list.html', context)
+
+    else:
+        return redirect('business:login')
+
+
+def add_product(request):
+    if request.session.has_key('business_username'):
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            price = request.POST.get('price')
+            stock = request.POST.get('stock')
+            category_id = request.POST.get('category_id')
+            photo = request.FILES.get('photo')
+
+            context = get_business_context(request)
+
+            product = Product(name=name, price=price, stock=stock, photo=photo)
+            
+            errors = product.validate(category_id)
+            if len(errors.keys()):
+                context['errors'] = errors
+                return render(request, 'business/catalog/product/add.html', context)
+
+            else:
+                # Everything is okay, persist category to db
+                business=context.get('business')
+                category = Category.objects.get(id=category_id)
+                product.business = business
+                product.category = category
+                product.save()
+                return redirect('business:products')
+
+        else:
+            context = get_business_context(request)
+            business = context.get('business')
+            categories = business.business_categories.all()
+            context['categories'] = categories
+            return render(request, 'business/catalog/product/add.html', context)
 
     else:
         return redirect('business:login')
