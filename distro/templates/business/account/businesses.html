@@ -33,15 +33,17 @@
                                     <th>Photo</th>
                                     <th>Name</th>
                                     <th>Role</th>
+                                    <th>Edit</th>
                                     <th>Status</th>
                                 </thead>
                                 <tbody>
                                     {% for item in businesses %}
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
-                                            <td>{{ item.photo }}</td>
+                                            <td><img src="/media/{{ item.photo }}" style="height:40px; width:40px;"/></td>
                                             <td>{{ item.name }}</td>
                                             <td>{{ item.role }}</td>
+                                            <td><a href="/business/{{item.id}}/edit" class="btn btn-sm btn-outline-success">Edit</a></td>
                                             <td>
                                                 {% if item.id == curr_business_id %}
                                                     <div class="text-success">Current</div>

@@ -18,38 +18,49 @@
                     <div class="pd-x-30 pd-t-30 pd-b-15">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">Add Businesses</h6>
+                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">{{ text_title }}</h6>
                             </div>
                         </div>
                     </div>
                     <div class="pd-x-15 pd-b-15">
                         
-                        <form action="/business/add" method="post">
+                        <form action="{{action}}" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="name">Business name (<span class="text-danger">*</span>)</label>
-                                <input id="name" name="name" type="text" class="form-control" required/>
+                                <input id="name" name="name" value="{{ name }}" type="text" class="form-control" required/>
                             </div>
 
                             <div class="form-group">
                                 <label for="category">Category (<span class="text-danger">*</span>)</label>
-                                <input id="category" name="category" type="text" class="form-control" required/>
+                                <input id="category" name="category" value="{{ category }}" type="text" class="form-control" required/>
                             </div>
 
                             <div class="form-group">
                                 <label>Photo (<span class="text-danger">*</span>)</label><br/>
                                 <label class="custom-file" for="file">
-                                <input type="file" id="file" class="custom-file-input" accept="image/x-png,image/jpg,image/jpeg" required/>
+                                <input 
+                                    type="file" 
+                                    id="file"
+                                    name="photo"
+                                    class="custom-file-input" 
+                                    accept="image/x-png,image/jpg,image/jpeg" 
+                                    onChange="viewImage(this)"
+                                />
                                 <span class="custom-file-control"></span>
                                 </label>
                             </div>
 
                             <div class="form-group">
-                                <label for="location">Location (<span class="text-danger">*</span>)</label>
-                                <input id="location" name="location" type="text" class="form-control" required/>
+                                <img id="image" src="#" style="height: 100px;width:100px;"/>
                             </div>
 
-                            <button type="submit" class="btn btn-teal">Submit</button>
+                            <div class="form-group">
+                                <label for="location">Location (<span class="text-danger">*</span>)</label>
+                                <input id="location" name="location" value="{{ location }}" type="text" class="form-control" required/>
+                            </div>
+
+                            <button type="submit" class="btn btn-teal">{{ text_button }}</button>
                         </form>
                            
                     </div>
@@ -58,4 +69,24 @@
             </div><!-- col-9 -->
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        var photo_file = "{{ photo }}";
+        
+        if(photo_file){
+            document.getElementById("image").src = "/media/" + photo_file;
+        }
+
+        function viewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#image').attr('src', e.target.result);
+                }   
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script> 
 {% endblock %}

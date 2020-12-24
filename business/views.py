@@ -123,6 +123,9 @@ def my_businesses(request):
 def add_businesses(request):
     if request.session.has_key('business_username'):
         # admin session still authenticated
+        context = get_authenticated_context(request)
+        context['text_title'] = 'Add Business'
+        context['text_button'] = 'Submit'
         if request.method == 'POST':
             name = request.POST.get('name')
             category = request.POST.get('category')
@@ -148,7 +151,51 @@ def add_businesses(request):
                 return render(request, 'business/business/add.html', context)
 
         else:
-            context = get_authenticated_context(request)
+            return render(request, 'business/business/add.html', context)
+
+    else:
+        return redirect('business:login')
+
+
+
+def edit_businesses(request, business_id):
+    if request.session.has_key('business_username'):
+        # admin session still authenticated
+        context = get_authenticated_context(request)
+        business = Business.get_by_id(business_id)
+        context['name'] = business.name
+        context['category'] = business.category
+        context['location'] = business.location
+        context['photo'] = business.photo
+        context['action'] = f'/business/{business_id}/edit'
+        context['text_title'] = 'Edit Business'
+        context['text_button'] = 'Update'
+
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            category = request.POST.get('category')
+            location = request.POST.get('location')
+            photo = request.FILES.get('photo')
+
+            user = BaseUser.get_user_by_username(username=request.session['business_username'])
+            business.name = name
+            business.category = category
+            business.location = location
+            if photo:
+                business.photo = photo
+
+            errors = business.validate()
+            if(len(errors.keys())):
+                context['errors'] = errors
+                return render(request, 'business/business/add.html', context)
+
+            else:
+                business.save()
+                business.add_role(user, BUSINESS_OWNER)
+                business.save()
+                return redirect('business:my_businesses')
+
+        else:
             return render(request, 'business/business/add.html', context)
 
     else:
