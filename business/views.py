@@ -267,6 +267,7 @@ def users(request, role_id):
                 break
         context['role_title'] = role_title
         context['role_id'] = int(role_id)
+        context['modifiable'] = not (role_id == BUSINESS_OWNER)
         return render(request, 'business/user/list.html', context)
 
 
@@ -286,6 +287,9 @@ def add_user(request, role_id):
                 break
         context['role_title'] = role_title
         context['role_id'] = int(role_id)
+        context['text_title'] = f'Add {role_title}'
+        context['action'] = f'/business/users/role/{role_id}/add'
+        context['btn_text'] = 'Submit'
 
         if request.method == 'POST':
             post = request.POST
@@ -346,6 +350,62 @@ def add_user(request, role_id):
 
 
         else:
+            return render(request, 'business/user/add.html', context)
+
+    else:
+        return redirect('business:login')
+
+
+def edit_user(request, user_id, role_id):
+    if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        business = context.get('business')
+            # Current role
+        role_title = None
+        for r in business_roles:
+            if r['id'] == int(role_id):
+                role_title = r['title']
+                break
+        context['role_title'] = role_title
+        context['role_id'] = int(role_id)
+        context['text_title'] = f"Edit {context['role_title']}"
+        context['action'] = f'/business/users/{user_id}/role/{role_id}/edit'
+        context['btn_text'] = 'Update'
+
+        if request.method == 'POST':
+            post = request.POST
+            first_name = post.get('user_id')
+            first_name = post.get('first_name')
+            last_name = post.get('last_name')
+            username = post.get('username')
+            email = post.get('email')
+            phone = post.get('phone')
+            password = post.get('password')
+
+            base_user = BaseUser.get_by_id(user_id)
+            base_user.update(first_name, last_name, username, email, phone, password)
+            errors = base_user.validate()
+            if len(errors.keys()):
+                context['errors'] = errors
+                context['first_name'] = first_name
+                context['last_name'] = last_name
+                context['username'] = username
+                context['email'] = email
+                context['phone'] = phone
+                return render(request, 'business/user/add.html', context)
+
+            else:
+                base_user.save()
+                return redirect(f'/business/users/{role_id}/role')
+
+        else:
+            base_user = BaseUser.get_by_id(user_id)
+            context['first_name'] = base_user.first_name
+            context['last_name'] = base_user.last_name
+            context['username'] = base_user.username
+            context['email'] = base_user.email
+            context['phone'] = base_user.phone
+            context['password'] = ''
             return render(request, 'business/user/add.html', context)
 
     else:

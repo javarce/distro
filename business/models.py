@@ -37,17 +37,26 @@ class BaseUser(models.Model):
         if not self.username:
             errors['error_username'] = 'Username cannot be blank'
 
+        if self.usernameExists():
+            errors['error_username'] = 'User with this username already exists'
+
         if len(self.email) > 40:
             errors['error_email'] = 'Email cannot be more than 40 characters'
 
         if not self.email:
             errors['error_email'] = 'Email cannot be blank'
 
+        if self.emailExists():
+            errors['error_email'] = 'Email already in user by another user'
+
         if len(self.phone) > 40:
             errors['error_phone'] = 'Phone cannot be more than 40 characters'
 
         if not self.phone:
             errors['error_phone'] = 'Phone cannot be blank'
+
+        if self.phoneExists():
+            errors['error_phone'] = 'Phone already in user by another user'
 
         if len(self.password) > 225:
             errors['error_password'] = 'Password cannot be more than 40 characters'
@@ -57,19 +66,25 @@ class BaseUser(models.Model):
 
         return errors
 
+    @staticmethod
+    def get_by_id(id):
+        return BaseUser.objects.filter(id=id).first()
+
     
-    @staticmethod
-    def usernameExists(username):
-        users = BaseUser.objects.filter(username=username)
-        return bool(users)
+    def usernameExists(self):
+        user = BaseUser.objects.filter(username=self.username).first()
+        return user.id != self.id if user else False
 
-    @staticmethod
-    def phoneExists(phone):
-        return bool(BaseUser.objects.filter(phone=phone).first())
 
-    @staticmethod
-    def emailExists(email):
-        return bool(BaseUser.objects.filter(email=email).first())
+    def phoneExists(self):
+        user = BaseUser.objects.filter(phone=self.phone).first()
+        return user.id != self.id if user else False
+
+
+    def emailExists(self):
+        user = BaseUser.objects.filter(email=self.email).first()
+        return user.id != self.id if user else False
+
 
     def details(self):
         return {
@@ -90,6 +105,14 @@ class BaseUser(models.Model):
     @staticmethod
     def get_user_by_username(username: str) -> 'BaseUser':
         return BaseUser.objects.get(username=username)
+
+    def update(self, first_name, last_name, username, email, phone, password):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.username = username
+        self.email = email
+        self.phone = phone
+        self.password = password
 
 
 

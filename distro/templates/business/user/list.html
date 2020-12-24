@@ -28,16 +28,26 @@
                                 <thead style="background-color:#CCC;">
                                     <th>No</th>
                                     <th>Name</th>
+                                    <th>Username</th>
                                     <th>Email</th>
                                     <th>Phone</th>
+                                    {% if modifiable %}
+                                    <th>#</th>
+                                    <th>#</th>
+                                    {% endif %}
                                 </thead>
                                 <tbody>
                                     {% for item in users %}
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{ item.first_name }} {{ item.last_name }}</td>
+                                            <td>{{ item.username }}</td>
                                             <td>{{ item.email }}</td>
                                             <td>{{ item.phone }}</td>
+                                            {% if modifiable %}
+                                            <th><a href="/business/users/{{item.id}}/role/{{role_id}}/edit" class="btn btn-sm btn-outline-success">Edit</a></th>
+                                            <th><a href="/business/users/{{item.id}}/role/{{role_id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a></th>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
                                 </tbody>
