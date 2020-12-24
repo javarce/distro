@@ -264,6 +264,14 @@ class Product(models.Model):
 
         return errors
 
+    @staticmethod
+    def get_by_id(id):
+        try:
+            return Product.objects.get(id=id)
+
+        except:
+            return None
+
     
     def details(self):
         return {

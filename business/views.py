@@ -264,14 +264,17 @@ def products(request):
 
 def add_product(request):
     if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        context['text_title'] = 'Add Product'
+        context['text_button'] = 'Submit'
+        context['action'] = '/business/catalog/product/add'
+
         if request.method == 'POST':
             name = request.POST.get('name')
             price = request.POST.get('price')
             stock = request.POST.get('stock')
             category_id = request.POST.get('category_id')
             photo = request.FILES.get('photo')
-
-            context = get_business_context(request)
 
             product = Product(name=name, price=price, stock=stock, photo=photo)
             
@@ -290,7 +293,6 @@ def add_product(request):
                 return redirect('business:products')
 
         else:
-            context = get_business_context(request)
             business = context.get('business')
             categories = business.business_categories.all()
             context['categories'] = categories
@@ -299,6 +301,64 @@ def add_product(request):
     else:
         return redirect('business:login')
 
+
+
+def edit_product(request, product_id):
+    if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        context['text_title'] = 'Edit Product'
+        context['text_button'] = 'Update'
+        context['action'] = f'/business/catalog/product/{product_id}/edit'
+
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            price = request.POST.get('price')
+            stock = request.POST.get('stock')
+            category_id = request.POST.get('category_id')
+            photo = request.FILES.get('photo')
+
+            product = Product.get_by_id(product_id)
+            product.name = name
+            product.price = price
+            product.stock = stock
+            if photo:
+                product.photo = photo
+            
+            errors = product.validate(category_id)
+            if len(errors.keys()):
+                context['errors'] = errors
+                return render(request, 'business/catalog/product/add.html', context)
+
+            else:
+                # Everything is okay, persist category to db
+                business=context.get('business')
+                category = Category.objects.get(id=category_id)
+                product.business = business
+                product.category = category
+                product.save()
+                return redirect('business:products')
+
+        else:
+            business = context.get('business')
+            categories = business.business_categories.all()
+            context['categories'] = categories
+
+            product = Product.get_by_id(product_id)
+            context['name'] = product.name
+            context['price'] = product.price
+            context['stock'] = product.stock
+            context['category_id'] = product.category.id
+            context['photo'] = product.photo
+            return render(request, 'business/catalog/product/add.html', context)
+
+    else:
+        return redirect('business:login')
+
+
+def delete_product(request, product_id):
+    product = Product.get_by_id(product_id)
+    product.delete()
+    return redirect(f'/business/catalog/products')
 
 
 def users(request, role_id):
