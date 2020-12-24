@@ -73,13 +73,18 @@ def register(request):
         password = post.get('password')
         re_password = post.get('re_password')
 
+        context = {}
+        context['first_name'] = first_name
+        context['last_name'] = last_name
+        context['username'] = username
+        context['email'] = email
+        context['phone'] = phone
+
         if password != re_password:
             errors = {}
             errors['error_password'] = 'Passwords do not match'
-            return render(request, 'business/account/register.html', {errors: errors})
-
-        elif BaseUser.usernameExists(username):
-            return render(request, 'business/account/register.html', {errors: {'error_username': 'Username already in user'}})
+            context['errors'] = errors
+            return render(request, 'business/account/register.html', context)
 
         else:
             base_user = BaseUser(
@@ -93,7 +98,8 @@ def register(request):
             )
             errors = base_user.validate()
             if len(errors.keys()):
-                return render(request, 'business/account/register.html', {errors: errors})
+                context['errors'] = errors
+                return render(request, 'business/account/register.html', context)
 
             else:
                 base_user.save()
