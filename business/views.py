@@ -178,17 +178,20 @@ def categories(request):
 
 def add_category(request):
     if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        context['text_title'] = 'Add Category'
+        context['text_button'] = 'Submit'
+
         if request.method == 'POST':
             name = request.POST.get('name')
             photo = request.FILES.get('photo')
 
-            cont = get_business_context(request)
-            category = Category(name=name, photo=photo, business=cont.get('business'))
+            category = Category(name=name, photo=photo, business=context.get('business'))
             
             errors = category.validate()
             if len(errors.keys()):
-                cont['errors'] = errors
-                return render(request, 'business/catalog/category/add.html', cont)
+                context['errors'] = errors
+                return render(request, 'business/catalog/category/add.html', context)
 
             else:
                 # Everything is okay, persist category to db
@@ -196,10 +199,56 @@ def add_category(request):
                 return redirect('business:categories')
 
         else:
-            return render(request, 'business/catalog/category/add.html', {'business_roles': business_roles})
+            return render(request, 'business/catalog/category/add.html', context)
 
     else:
         return redirect('business:login')
+
+
+def edit_category(request, id):
+    if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        context['text_title'] = 'Edit Category'
+        context['text_button'] = 'Update'
+        category = Category.objects.filter(id=id).first()
+
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            photo = request.FILES.get('photo')
+
+            category.name = name
+            if photo:
+                category.photo = photo 
+            
+            errors = category.validate()
+            if len(errors.keys()):
+                context['errors'] = errors
+                context['name'] = name
+                return render(request, 'business/catalog/category/add.html', context)
+
+            else:
+                # Everything is okay, persist category to db
+                category.save()
+                return redirect('business:categories')
+
+        else:
+            context['name'] = category.name
+            context['photo'] = category.photo
+            context['action'] = f'/business/catalog/category/{id}/edit'
+            return render(request, 'business/catalog/category/add.html', context)
+
+    else:
+        return redirect('business:login')
+
+
+
+
+def delete_category(request, id):
+    category = Category.get_by_id(id)
+    category.delete()
+    return redirect(f'/business/catalog/categories')
+
+
 
 
 def products(request):

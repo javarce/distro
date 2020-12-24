@@ -221,6 +221,15 @@ class Category(models.Model):
         return errors
 
 
+    @staticmethod
+    def get_by_id(id):
+        try:
+            return Category.objects.get(id=id)
+
+        except:
+            return None
+
+
 class Product(models.Model):
     name = models.CharField(max_length=225)
     price = models.BigIntegerField(null=False, blank=False)
@@ -267,6 +276,3 @@ class Product(models.Model):
             'is_stock_available': self.stock > 0,
             'stock_status': 'In-Stock' if self.stock > 0 else 'Not-In-Stock'
         }
-
-
-
