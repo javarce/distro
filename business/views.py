@@ -300,26 +300,18 @@ def add_user(request, role_id):
             phone = post.get('phone')
             password = post.get('password')
 
-            if BaseUser.usernameExists(username):
-                context['errors'] = {'error_username': 'Username already exists'}
-                context['first_name'] = first_name
-                context['last_name'] = last_name
-                context['username'] = username
-                context['email'] = email
-                context['phone'] = phone
-                return render(request, 'business/user/add.html', context)
-
-            elif BaseUser.phoneExists(phone):
-                context['errors'] = {'error_phone': 'User with this phone already exists'}
-                context['first_name'] = first_name
-                context['last_name'] = last_name
-                context['username'] = username
-                context['email'] = email
-                context['phone'] = phone
-                return render(request, 'business/user/add.html', context)
-
-            elif BaseUser.emailExists(email):
-                context['errors'] = {'error_email': 'User with this email already exists'}
+            base_user = BaseUser(
+                role=role_id,
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                email=email,
+                phone=phone,
+                password=password
+            )
+            errors = base_user.validate()
+            if len(errors.keys()):
+                context['errors'] = errors
                 context['first_name'] = first_name
                 context['last_name'] = last_name
                 context['username'] = username
@@ -328,26 +320,11 @@ def add_user(request, role_id):
                 return render(request, 'business/user/add.html', context)
 
             else:
-                base_user = BaseUser(
-                    role=role_id,
-                    first_name=first_name,
-                    last_name=last_name,
-                    username=username,
-                    email=email,
-                    phone=phone,
-                    password=password
-                )
-                errors = base_user.validate()
-                if len(errors.keys()):
-                    return render(request, 'business/user/add.html', {errors: errors})
-
-                else:
-                    base_user.save()
-                    business_id = request.session.get('curr_business_id')
-                    business = Business.get_by_id(business_id)
-                    business.add_role(base_user, role_id)
-                    return redirect(f'/business/users/{role_id}/role')
-
+                base_user.save()
+                business_id = request.session.get('curr_business_id')
+                business = Business.get_by_id(business_id)
+                business.add_role(base_user, role_id)
+                return redirect(f'/business/users/{role_id}/role')
 
         else:
             return render(request, 'business/user/add.html', context)
@@ -410,3 +387,9 @@ def edit_user(request, user_id, role_id):
 
     else:
         return redirect('business:login')
+
+
+def delete_user(request, user_id, role_id):
+    user = BaseUser.get_by_id(user_id)
+    user.delete()
+    return redirect(f'/business/users/{role_id}/role')
