@@ -116,7 +116,7 @@
 				<ul class="br-menu-sub nav flex-column">
 					{% for item in business_roles %}
 					<li class="nav-item">
-						<a href="/business/users?group_id={{item.id}}" class="nav-link">
+						<a href="/business/users/{{item.id}}/role" class="nav-link">
 							{{ item.title }}
 						</a>
 					</li>

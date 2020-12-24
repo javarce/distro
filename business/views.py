@@ -1,5 +1,5 @@
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from business.models import BaseUser, Business, Category, Product
 from business.constants import BUSINESS_OWNER, business_roles
 
@@ -50,6 +50,11 @@ def login(request):
 
     else:
         return render(request, 'business/account/login.html')
+
+
+def logout(request):
+    request.session.pop('business_username', 1)
+    return redirect('business:login')
 
 
 def dashboard(request):
@@ -247,23 +252,101 @@ def add_product(request):
 
 
 
-def users(request):
+def users(request, role_id):
     if request.session.has_key('business_username'):
-        role = request.GET.get('group_id')
         context = get_business_context(request)
         business = context.get('business')
-        users = business.get_users(role)
+        users = business.get_users(role_id)
         context['users'] = users
 
         # Current role
         role_title = None
         for r in business_roles:
-            if r['id'] == int(role):
+            if r['id'] == int(role_id):
                 role_title = r['title']
                 break
         context['role_title'] = role_title
+        context['role_id'] = int(role_id)
         return render(request, 'business/user/list.html', context)
 
+
+    else:
+        return redirect('business:login')
+
+
+def add_user(request, role_id):
+    if request.session.has_key('business_username'):
+        context = get_business_context(request)
+        business = context.get('business')
+            # Current role
+        role_title = None
+        for r in business_roles:
+            if r['id'] == int(role_id):
+                role_title = r['title']
+                break
+        context['role_title'] = role_title
+        context['role_id'] = int(role_id)
+
+        if request.method == 'POST':
+            post = request.POST
+            first_name = post.get('first_name')
+            last_name = post.get('last_name')
+            username = post.get('username')
+            email = post.get('email')
+            phone = post.get('phone')
+            password = post.get('password')
+
+            if BaseUser.usernameExists(username):
+                context['errors'] = {'error_username': 'Username already exists'}
+                context['first_name'] = first_name
+                context['last_name'] = last_name
+                context['username'] = username
+                context['email'] = email
+                context['phone'] = phone
+                return render(request, 'business/user/add.html', context)
+
+            elif BaseUser.phoneExists(phone):
+                context['errors'] = {'error_phone': 'User with this phone already exists'}
+                context['first_name'] = first_name
+                context['last_name'] = last_name
+                context['username'] = username
+                context['email'] = email
+                context['phone'] = phone
+                return render(request, 'business/user/add.html', context)
+
+            elif BaseUser.emailExists(email):
+                context['errors'] = {'error_email': 'User with this email already exists'}
+                context['first_name'] = first_name
+                context['last_name'] = last_name
+                context['username'] = username
+                context['email'] = email
+                context['phone'] = phone
+                return render(request, 'business/user/add.html', context)
+
+            else:
+                base_user = BaseUser(
+                    role=role_id,
+                    first_name=first_name,
+                    last_name=last_name,
+                    username=username,
+                    email=email,
+                    phone=phone,
+                    password=password
+                )
+                errors = base_user.validate()
+                if len(errors.keys()):
+                    return render(request, 'business/user/add.html', {errors: errors})
+
+                else:
+                    base_user.save()
+                    business_id = request.session.get('curr_business_id')
+                    business = Business.get_by_id(business_id)
+                    business.add_role(base_user, role_id)
+                    return redirect(f'/business/users/{role_id}/role')
+
+
+        else:
+            return render(request, 'business/user/add.html', context)
 
     else:
         return redirect('business:login')

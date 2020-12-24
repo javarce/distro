@@ -63,6 +63,14 @@ class BaseUser(models.Model):
         users = BaseUser.objects.filter(username=username)
         return bool(users)
 
+    @staticmethod
+    def phoneExists(phone):
+        return bool(BaseUser.objects.filter(phone=phone).first())
+
+    @staticmethod
+    def emailExists(email):
+        return bool(BaseUser.objects.filter(email=email).first())
+
     def details(self):
         return {
             'id': self.id,
@@ -132,6 +140,11 @@ class Business(models.Model):
         }
 
 
+    @staticmethod
+    def get_by_id(id: int) -> 'Business':
+        return Business.objects.filter(id=id).first()
+
+
     def business_role(self, user) -> str:
         ''' Get role of the user on this business. '''
         b_role = BusinessRole.objects.filter(user=user, business=self).first()
@@ -148,8 +161,11 @@ class Business(models.Model):
             Add user to this business, and their respective role.
             This method must be called when both the user and business have been saved
         '''
+        self.users.add(user)
+        self.save()
         business_role = BusinessRole(role=role, user=user, business=self)
         business_role.save()
+
 
 
 

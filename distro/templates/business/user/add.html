@@ -1,0 +1,90 @@
+
+{% extends 'business/layouts/base.html' %}
+
+{% block content %}
+    <div class="pd-30">
+        <h4 class="tx-gray-800 mg-b-5">{{ business.name }}</h4>
+    </div>
+
+    <div class="br-pagebody mg-t-5 pd-x-30">
+
+        <div class="row row-sm mg-t-20">
+            <div class="col-12">
+                <div class="card pd-0 bd-0 shadow-base">
+                    <div class="pd-x-30 pd-t-30 pd-b-15">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="tx-13 tx-uppercase tx-inverse tx-semibold tx-spacing-1">Add {{ role_title }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pd-x-15 pd-b-15">
+                        
+                        <form action="/business/users/role/{{role_id}}/add" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="role_id" value="{{role_id}}"/>
+
+                            <div class="form-group">
+                                <!-- First name -->
+                                <label for="first_name">First name</label>
+                                {% if errors.error_first_name %}
+                                    <p class="text-danger">{{ errors.error_first_name }}</p>
+                                {% endif %}
+                                <input id="first_name" name="first_name" value="{{ first_name }}" type="text" class="form-control" placeholder="">
+                            </div>
+                
+                            <div class="form-group">
+                                <!-- Last name -->
+                                <label for="last_name">Last name</label>
+                                {% if errors.error_last_name %}
+                                    <p class="text-danger">{{ errors.error_last_name }}</p>
+                                {% endif %}
+                                <input id="last_name" name="last_name" value="{{ last_name }}" type="text" class="form-control">
+                            </div>
+                
+                            <div class="form-group">
+                                <!-- Username -->
+                                <label for="username">Username</label>
+                                {% if errors.error_username %}
+                                    <p class="text-danger">{{ errors.error_username }}</p>
+                                {% endif %}
+                                <input id="username" name="username" value="{{ username }}" type="text" class="form-control">
+                            </div>
+                
+                
+                            <div class="form-group">
+                                <!-- Email -->
+                                <label for="email">Email</label>
+                                {% if errors.error_email %}
+                                    <p class="text-danger">{{ errors.error_email }}</p>
+                                {% endif %}
+                                <input id="email" name="email" value="{{ email }}" type="email" class="form-control">
+                            </div>
+                
+                            <div class="form-group">
+                                <!-- Telephone -->
+                                <label for="phone">Phone</label>
+                                {% if errors.error_phone %}
+                                    <p class="text-danger">{{ errors.error_phone }}</p>
+                                {% endif %}
+                                <input id="phone" name="phone" value="{{ phone }}" type="text" class="form-control">
+                            </div>
+                
+                            <div class="form-group">
+                                <!-- Password -->
+                                <label for="password">Password</label>
+                                <input id="password" name="password" type="text" class="form-control" value="1234" readonly>
+                            </div>
+
+                            <button type="submit" class="btn btn-teal">Submit</button>
+                        </form>
+                        
+                    </div>
+                </div><!-- card -->
+
+            </div><!-- col-9 -->
+        </div>
+
+    </div>
+{% endblock %}
