@@ -7,5 +7,7 @@ app_name = 'front'
 
 
 urlpatterns = [
-    path('', views.index, name='index')
+    path('', views.index, name='index'),
+    path('/businesses', views.businesses, name='businesses'),
+    path('/products', views.products, name='products'),
 ]
