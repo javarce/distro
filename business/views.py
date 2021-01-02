@@ -145,16 +145,16 @@ def add_businesses(request):
             errors = business.validate()
 
             if(len(errors.keys())):
+                context['errors'] = errors
+                return render(request, 'business/business/add.html', context)
+
+            else:
                 business.save()
                 business.users.add(user)
                 business.save()
 
                 business.add_role(user, BUSINESS_OWNER)
                 return redirect('business:my_businesses')
-
-            else:
-                context['errors'] = errors
-                return render(request, 'business/business/add.html', context)
 
         else:
             return render(request, 'business/business/add.html', context)
