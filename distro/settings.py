@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'business'
+    'business',
+    'front'
 ]
 
 APPEND_SLASH = False
@@ -78,28 +79,28 @@ WSGI_APPLICATION = 'distro.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # Local
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'distro_db',
-#         'USER': 'postgres',
-#         'PASSWORD': '1234',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-
-# Heroku
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd5dumvtd65egob',
-        'USER': 'dkhqgdglvzhbqc',
-        'PASSWORD': 'd105a29b89a673c79c5d973bc1dcd98c28f76e7b6d7abebbe546ccf2019a15f8',
-        'HOST': 'ec2-34-204-22-76.compute-1.amazonaws.com',
+        'NAME': 'distro_db',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
+
+# Heroku
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'd5dumvtd65egob',
+#         'USER': 'dkhqgdglvzhbqc',
+#         'PASSWORD': 'd105a29b89a673c79c5d973bc1dcd98c28f76e7b6d7abebbe546ccf2019a15f8',
+#         'HOST': 'ec2-34-204-22-76.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
