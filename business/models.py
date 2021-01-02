@@ -170,7 +170,7 @@ class Business(models.Model):
 
     def business_role(self, user) -> str:
         ''' Get role of the user on this business. '''
-        b_role = BusinessRole.objects.filter(user=user, business=self).first()
+        b_role = BusinessRole.objects.filter(user_id=user.id, business_id=self.id).first()
         if b_role:
             return b_role.get_role_display()
 
@@ -186,7 +186,7 @@ class Business(models.Model):
         '''
         self.users.add(user)
         self.save()
-        business_role = BusinessRole(role=role, user=user, business=self)
+        business_role = BusinessRole(role=role, user_id=user.id, business_id=self.id)
         business_role.save()
 
 
@@ -194,8 +194,8 @@ class Business(models.Model):
 class BusinessRole(models.Model):
     ''' Table to hold roles of accounts on businesses. '''
     role = models.PositiveSmallIntegerField(choices=ROLES, blank=False, null=False)
-    user = models.ManyToManyField(BaseUser)
-    business = models.ManyToManyField(Business)
+    user_id = models.IntegerField(default=0, null=False, blank=False)
+    business_id = models.IntegerField(default=0, null=False, blank=False)
 
 
 class Category(models.Model):
