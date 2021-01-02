@@ -194,8 +194,8 @@ class Business(models.Model):
 class BusinessRole(models.Model):
     ''' Table to hold roles of accounts on businesses. '''
     role = models.PositiveSmallIntegerField(choices=ROLES, blank=False, null=False)
-    user = models.ManyToManyField(BaseUser, on_delete=models.CASCADE)
-    business = models.ManyToManyField(Business, on_delete=models.CASCADE)
+    user = models.ManyToManyField(BaseUser)
+    business = models.ManyToManyField(Business)
 
 
 class Category(models.Model):
